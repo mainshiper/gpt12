@@ -23,7 +23,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "OPENAI_API_KEY", "\"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\"")
+        buildConfigField("String", "OPENAI_API_KEY", "\"$openAiApiKey\"")
     }
 
     buildTypes {
