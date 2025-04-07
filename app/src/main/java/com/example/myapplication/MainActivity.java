@@ -16,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.ChatMsg;
+import com.example.myapplication.ChatMsgAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,25 +104,30 @@ public class MainActivity extends AppCompatActivity {
                 "gpt-3.5-turbo",
                 chatMsgList
         );
-        String apiKey = "Bearer " + BuildConfig.OPENAI_API_KEY;
-        api.getChatResponse(apiKey, request).enqueue(new Callback<ChatGPTResponse>() {
+
+        api.getChatResponse(request).enqueue(new Callback<ChatGPTResponse>() {
             @Override
             public void onResponse(Call<ChatGPTResponse> call, Response<ChatGPTResponse> response) {
+                //응답을 성공적으로 받은 경우
                 if (response.isSuccessful() && response.body() != null) {
+                    //응답에서 gpt 답변 가져오기
                     String chatResponse = response.body().getChoices().get(0).getMessage().content;
+                    //리사이클러뷰에 답변 추가하기
                     adapter.addChatMsg(new ChatMsg(ChatMsg.ROLE_ASSISTANT, chatResponse));
+                    //로딩바 숨기기
                     progressBar.setVisibility(View.GONE);
+                    //화면 터치 차단 해제
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 } else {
+                    //응답 오류
                     Log.e("getChatResponse", "Error: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ChatGPTResponse> call, Throwable t) {
-                Log.e("getChatResponse", "Failure: " + t.getMessage());
-                progressBar.setVisibility(View.GONE);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                //응답 오류
+                Log.e("getChatResponse", "onFailure: ", t);
             }
         });
     }
